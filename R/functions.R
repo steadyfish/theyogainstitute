@@ -9,6 +9,7 @@ library(magrittr)
 library(tidyr)
 library(stringr)
 library(lubridate)
+library(networkD3)
 library(RecordLinkage)
 download_data = function(baseurl = "https://api.mixcloud.com/theyogainstitute/feed/", batch_size = 20){
   end_indicator = FALSE
@@ -59,20 +60,40 @@ d_in3 = d_in2 %>%
 # approach 3: extract elements from "slug" with proper regex
 d_in1[, c("spec1", "date", "topic")] = str_match(string = d_in1$slug, 
                                                  pattern = "([\\S]*?parisamvad)-??([\\S]*?(2015|2016|2017))-??(([\\S])*?(smt|dr|$))")[, c(2, 3, 5)]
-View(table(d_in1$topic, useNA = "always"))
-View(d_in1 %>% filter(is.na(topic)))
-
-
+# View(table(d_in1$topic, useNA = "always"))
+# View(d_in1 %>% filter(is.na(topic)))
 
 d_in2 = d_in1 %>% 
   mutate(topic1 = str_replace(topic, "^-", ""),
-         topic2 = str_replace(topic1, "(-smt|-dr)$", ""))
-View(table(d_in2$topic2, useNA = "always"))
+         topic2 = str_replace(topic1, "(-smt|-dr)$", "")) %>%
+  select(-c(topic, topic1)) %>%
+  rename(topic = topic2) %>%
+  select(topic, url, created_time, play_count, audio_length)
+# View(table(d_in2$topic2, useNA = "always"))
 
 
+d_in3 = read.csv("data/dictionary.csv", header = TRUE, stringsAsFactors = FALSE)
 
-# format:
-str_view_all(string = a, pattern = "([\\S]*?parisamvad)")
-str_match(string = a, pattern = "([\\S]*?parisamvad)([\\S]*?(2016|2017|16|17))")
-([text]*[parisamvad])-([alphanumeric text]*[-16- | -17- | -2016- | -2017-])(alphanumeric)
+# simple join
+d_in4 = d_in3 %>%
+  full_join(d_in2, by = c("topic" = "topic"))
 
+d_in5 = d_in4 %>%
+  filter(!is.na(topic)) %>%
+  mutate(t = str_detect(topic, "bg"),
+         category = if_else(
+           str_detect(topic, fixed("bg")), "bhagwad gita",
+           if_else(str_detect(topic, fixed("pys")), "patanjali yogasutra",
+                   if_else(is.na(category), "other", category))))
+
+# plotting as a radial network
+# convert d_in5 to a list
+forceNetwork()
+
+# approx join
+d_in5 = compare.dedup(d_in4, strcmp = c(1), strcmpfun = jarowinkler)
+hist(d_in5$pairs$topic)
+# trying cutoff as 0.75 based on the histogram
+# computing weights (don't understand the reason)
+d_in6 = emWeights(d_in5, cutoff = 0.75)
+d_in7 = getPairs(d_in6, max.weight = 1, min.weight = 0.1)
