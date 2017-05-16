@@ -1,0 +1,15 @@
+---
+title: "The yoga institute podcast classification"
+output: html_notebook
+---
+
+
+```{r}
+source("functions.R")
+d_in = download_data()
+d_in1 = clean_data(d_in)
+d_in2 = link_data(d_in1)
+plot_data(d_in2)
+
+```
+
