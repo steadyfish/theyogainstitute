@@ -1,7 +1,18 @@
 topic,category
+"types of mind",yoga
+"self restraints (yama)",yoga
+"positive duties (niyama)",yoga
+"aims of human life (purushartha)",yoga
+bhava,yoga
+"attitudes with people",yoga
+"pillars of yoga",yoga
+"afflications of mind (klesha)",yoga
+"patanjali yogasutra",yoga
+"bhagwad gita",yoga
+other,yoga
 mudha,"types of mind"
-kshipta,"types of mind"
-vikshipta,"types of mind"
+ksipta,"types of mind"
+viksipta,"types of mind"
 ekagra,"types of mind"
 niruddha,"types of mind"
 ahimsa,"self restraints (yama)"
@@ -25,7 +36,7 @@ aishvarya,bhava
 maitri,"attitudes with people"
 karuna,"attitudes with people"
 mudita,"attitudes with people"
-upeksha,"attitudes with people"
+upeksa,"attitudes with people"
 ahar,"pillars of yoga"
 vihar,"pillars of yoga"
 achar,"pillars of yoga"
